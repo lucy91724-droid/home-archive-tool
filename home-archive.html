@@ -1028,6 +1028,7 @@ function renderRight(){
       </div>
       ${ui.exported&&ui.saved?`<div class="rec"><div class="r"><div class="k">SUBMITTED<small>已送出</small></div><div class="v"><span class="q">檔案已經送出給研究者，謝謝你的參與。之後若修改內容，可以再按一次「再次送出」。</span></div></div></div>`:''}
       ${ui.exported&&!ui.saved?`<div class="rec"><div class="r"><div class="k">EXPORT<small>紀錄</small></div><div class="v"><span class="q" style="font-size:12.5px">無法自動送出。請按「複製紀錄」，再貼到研究者提供的表單或訊息中。</span><textarea class="exportbox" id="exportbox" readonly></textarea></div></div></div>`:''}
+      <div class="rec"><div class="r"><div class="k">NEW<small>下一位</small></div><div class="v"><span class="q" style="font-size:12.5px">${S.submitted?'這份已送出。要讓下一位填寫時，按這裡清空畫面。':'這份還沒送出，清空後就找不回來了。'}</span><button class="chip" id="newrun" style="margin-top:6px">開始新的一份</button></div></div></div>
       </div>${nav('上一步',!ui.exported?'完成並送出':ui.saved?'再次送出':'複製紀錄','FINISH')}`;
     const se=$('sent'),ar=$('arch'),wh=$('whole');
     wh.oninput=()=>{S.whole=wh.value;save();renderCards()};wh.onchange=()=>log('whole',{text:wh.value});
@@ -1036,6 +1037,7 @@ function renderRight(){
     $('back').onclick=()=>{ui.qi=S.items.length-1;go(4)};
     $('next').onclick=async()=>{if(ui.exported&&ui.saved){log('resubmit');const ok=await submitToDB();toast(ok?'已再次送出':'送出失敗，請稍後再試');return}finish()};
     if(ui.exported&&!ui.saved)$('exportbox').value=exportData();
+    const nb=$('newrun');let armed=false;nb.onclick=()=>{if(!armed){armed=true;nb.textContent='再按一次確認清空';nb.classList.add('on');setTimeout(()=>{armed=false;nb.textContent='開始新的一份';nb.classList.remove('on')},4000);return}newRun()};
   }
 }
 function stepItem(){const it=S.items[ui.qi];log('item_enter',{id:it.id});ui.sel=it.id;focusItem(it);renderAll()}
@@ -1131,13 +1133,15 @@ async function submitToDB(){
 }
 async function finish(){
   if(!ui.exported){log('finish');ui.exported=true;
-    const ok=await submitToDB();ui.saved=ok;renderRight();
+    const ok=await submitToDB();ui.saved=ok;if(ok){S.submitted=new Date().toISOString();save()}renderRight();
     if(ok){toast('已送出，謝謝你');return}}
   const box=$('exportbox');if(!box)return;box.value=exportData();
   const done=()=>toast('已複製，謝謝你');const fail=()=>{box.focus();box.select();toast('已選取，請按 Ctrl／⌘ + C 複製')};
   try{navigator.clipboard.writeText(box.value).then(done,fail)}catch(e){fail()}
 }
-load();renderAll();
+function newRun(){try{localStorage.removeItem(KEY)}catch(e){}location.href=location.pathname}
+if(/[?&]new\b/.test(location.search)){try{localStorage.removeItem(KEY)}catch(e){}history.replaceState(null,'',location.pathname)}
+load();if(S.submitted){ui.exported=true;ui.saved=true}renderAll();
 </script>
 
 
