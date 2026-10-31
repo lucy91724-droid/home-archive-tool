@@ -1120,7 +1120,7 @@ function exportData(){return JSON.stringify({version:2,exported:new Date().toISO
 let DB=null,UID=null;
 (async()=>{try{if(!window.claude||!claude.use)return;const [db,user]=await Promise.all([claude.use('db'),claude.use('user')]);if(!db||!user)return;UID=await user.id();if(UID)DB=db}catch(e){}})();
 /* GitHub 版本：把 Google Apps Script 部署後的網址貼在這裡 */
-const SHEET_URL='';
+const SHEET_URL='https://script.google.com/macros/s/AKfycbxpx9fIg4isrRzI46WpPTwpOzL2-JwP3SViMKEtoBsvjjILjY_KtxBc_VbFUHahoEPdEQ/exec';
 async function submitToDB(){
   if(!S.runId)S.runId=new Date().toISOString().replace(/[:.]/g,'-')+'-'+uid();
   if(!DB||!UID){
