@@ -244,6 +244,14 @@ input[type=range]::-moz-range-thumb{width:10px;height:18px;background:var(--acc)
 .plan .pi .no{font-family:var(--mono);font-size:10px;color:var(--mute)}
 .plan .pi .must{font-family:var(--mono);font-size:9.5px;border:1px solid var(--acc);color:var(--acc);padding:0 4px}
 .plan .pi.empty{color:var(--mute)}
+.rankbox{display:block}.rankbox .ph{border-right:0}
+.rkl{list-style:none;margin:0;padding:10px 14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:6px 18px}
+.rkl li{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--rule2);min-width:0}
+.rkl .rn{font-family:var(--mono);font-size:12px;color:var(--acc);width:20px}
+.rkl .th{width:34px;height:34px;flex:none;display:block}.rkl .th svg{width:100%;height:100%}
+.rkl .nm{font-family:var(--tw);font-size:13px;line-height:1.35;min-width:0}
+.rankbox .why{border-top:1px solid var(--ink);padding:10px 14px;border-right:0}
+.rankbox .why p{margin:4px 0 0;font-family:var(--tw);font-size:14px;line-height:1.55}
 .homecard{grid-column:1/-1;background:#FAFAF7;border:1px solid var(--ink);display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
 .homecard>div{padding:12px 14px;border-right:1px solid var(--ink)}
 .homecard>div:last-child{border-right:0}
@@ -355,7 +363,7 @@ const VB=283.46;
 const PALETTE=['#E60012','#EE5A24','#F39800','#F8B500','#FFE100','#8FC31F','#009944','#009E96','#0068B7','#1D2088','#601986','#A5005B',
                '#FFFFFF','#B5B5B6','#595757','#231815'];
 const PALNAMES=['紅','橘紅','橙','橘黃','黃','黃綠','綠','藍綠','藍','靛','紫','紅紫','白','淺灰','深灰','黑'];
-const MATS=[{id:'wood',name:'木頭',en:'WOOD',base:'#7A5236'},{id:'fabric',name:'布料',en:'FABRIC',base:'#D7CFC1'},{id:'tile',name:'磁磚',en:'TILE',base:'#F4F4F2'},{id:'stone',name:'石材／水泥',en:'STONE',base:'#B6B3AC'},
+const MATS=[{id:'wood',name:'木頭',en:'WOOD',base:'#C49A6C'},{id:'fabric',name:'布料',en:'FABRIC',base:'#D7CFC1'},{id:'tile',name:'磁磚',en:'TILE',base:'#F4F4F2'},{id:'stone',name:'石材／水泥',en:'STONE',base:'#B6B3AC'},
             {id:'metal',name:'金屬',en:'METAL',base:'#A6A6A3'},{id:'glass',name:'玻璃',en:'GLASS',base:'#D5E5EA'},{id:'rattan',name:'籐編',en:'RATTAN',base:'#C8A268'},{id:'leather',name:'皮革',en:'LEATHER',base:'#7A4A33'},{id:'plastic',name:'塑膠',en:'PLASTIC',base:'#E8E4DC'}];
 const STEPS=[['00','入檔'],['01','選擇符號'],['02','說說它們'],['03','排排看'],['04','帶往下一個家'],['05','看看這個家']];
 const WANT=[['must','一定要有','MUST'],['nice','有的話很好','NICE TO HAVE'],['no','可以沒有了','LET GO']];
@@ -414,7 +422,7 @@ document.getElementById('sdefs').innerHTML=`
 <pattern id="p-tile" width="48" height="48" patternUnits="userSpaceOnUse"><rect width="48" height="48" fill="#fff"/><rect x="1.4" y="1.4" width="45.2" height="45.2" fill="none" stroke="#000" stroke-opacity=".06" stroke-width="2"/><path d="M0 .6H48M.6 0V48" stroke="#111" stroke-width="1.3"/></pattern>
 <pattern id="p-fabric" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#fff"/><path d="M0 1.5H6M0 4.5H6" stroke="#6a6a6a" stroke-width="1.3"/><path d="M1.5 0V6M4.5 0V6" stroke="#9a9a9a" stroke-width="1"/></pattern>
 <pattern id="p-rattan" width="18" height="18" patternUnits="userSpaceOnUse"><rect width="18" height="18" fill="#3a3a3a"/><rect x="1" y="2.5" width="7" height="4" rx="2" fill="#fff"/><rect x="10" y="11.5" width="7" height="4" rx="2" fill="#fff"/><rect x="11.5" y="1" width="4" height="7" rx="2" fill="#d8d8d8"/><rect x="2.5" y="10" width="4" height="7" rx="2" fill="#d8d8d8"/></pattern>
-${texFilter('wood','<feTurbulence type="fractalNoise" baseFrequency="0.05 0.0028" numOctaves="4" seed="11" result="n0"/><feTurbulence type="fractalNoise" baseFrequency="0.006 0.002" numOctaves="2" seed="3" result="n1"/><feComposite in="n0" in2="n1" operator="arithmetic" k1="0" k2=".75" k3=".5" k4="-.12" result="n"/>',1.5,.5,.03)}
+<pattern id="p-wood" width="420" height="120" patternUnits="userSpaceOnUse"><rect width="420" height="120" fill="#fff"/><rect y="0" width="420" height="60.0" fill="#F3EBE0" opacity=".5"/><path d="M0 4.9 L14 5.1 L28 5.1 L42 4.8 L56 4.3 L70 3.8 L84 3.3 L98 3.0 L112 2.9 L126 3.1 L140 3.4 L154 4.0 L168 4.5 L182 4.9 L196 5.1 L210 5.1 L224 4.8 L238 4.3 L252 3.8 L266 3.3 L280 3.0 L294 2.9 L308 3.1 L322 3.4 L336 3.9 L350 4.5 L364 4.9 L378 5.1 L392 5.1 L406 4.8 L420 4.3" stroke="#4A3524" stroke-opacity="0.22" stroke-width="0.6" fill="none"/><path d="M0 9.8 L14 9.6 L28 9.5 L42 9.4 L56 9.3 L70 9.2 L84 9.1 L98 9.1 L112 9.2 L126 9.2 L140 9.3 L154 9.4 L168 9.6 L182 9.7 L196 9.9 L210 10.0 L224 10.2 L238 10.3 L252 10.4 L266 10.5 L280 10.5 L294 10.5 L308 10.5 L322 10.4 L336 10.3 L350 10.2 L364 10.1 L378 9.9 L392 9.8 L406 9.6 L420 9.5" stroke="#4A3524" stroke-opacity="0.5" stroke-width="1.2" fill="none"/><path d="M0 14.5 L14 14.1 L28 13.7 L42 13.5 L56 13.4 L70 13.6 L84 14.0 L98 14.4 L112 14.7 L126 14.9 L140 14.9 L154 14.6 L168 14.2 L182 13.8 L196 13.5 L210 13.4 L224 13.5 L238 13.9 L252 14.3 L266 14.6 L280 14.9 L294 14.9 L308 14.7 L322 14.4 L336 14.0 L350 13.6 L364 13.4 L378 13.5 L392 13.7 L406 14.1 L420 14.5" stroke="#4A3524" stroke-opacity="0.22" stroke-width="0.8" fill="none"/><path d="M0 21.9 L14 22.5 L28 22.8 L42 22.8 L56 22.6 L70 22.0 L84 21.4 L98 20.7 L112 20.1 L126 19.8 L140 19.8 L154 20.1 L168 20.7 L182 21.4 L196 22.0 L210 22.6 L224 22.8 L238 22.8 L252 22.5 L266 21.9 L280 21.2 L294 20.6 L308 20.1 L322 19.8 L336 19.9 L350 20.2 L364 20.8 L378 21.5 L392 22.1 L406 22.6 L420 22.9" stroke="#4A3524" stroke-opacity="0.22" stroke-width="0.8" fill="none"/><path d="M0 27.5 L14 27.3 L28 27.0 L42 26.5 L56 26.0 L70 25.5 L84 25.0 L98 24.5 L112 24.1 L126 23.8 L140 23.6 L154 23.6 L168 23.7 L182 24.0 L196 24.3 L210 24.8 L224 25.3 L238 25.8 L252 26.3 L266 26.8 L280 27.1 L294 27.4 L308 27.5 L322 27.5 L336 27.3 L350 27.1 L364 26.7 L378 26.2 L392 25.7 L406 25.1 L420 24.6" stroke="#4A3524" stroke-opacity="0.22" stroke-width="1" fill="none"/><path d="M0 33.4 L14 33.9 L28 34.1 L42 33.9 L56 33.5 L70 32.8 L84 32.0 L98 31.3 L112 30.9 L126 30.7 L140 30.8 L154 31.3 L168 31.9 L182 32.7 L196 33.4 L210 33.9 L224 34.1 L238 33.9 L252 33.5 L266 32.8 L280 32.0 L294 31.3 L308 30.9 L322 30.7 L336 30.8 L350 31.3 L364 31.9 L378 32.7 L392 33.4 L406 33.9 L420 34.1" stroke="#4A3524" stroke-opacity="0.3" stroke-width="1" fill="none"/><path d="M0 36.2 L14 35.5 L28 35.2 L42 35.2 L56 35.5 L70 36.2 L84 37.0 L98 37.7 L112 38.3 L126 38.6 L140 38.5 L154 38.0 L168 37.3 L182 36.5 L196 35.8 L210 35.3 L224 35.1 L238 35.3 L252 35.9 L266 36.7 L280 37.5 L294 38.1 L308 38.5 L322 38.6 L336 38.2 L350 37.6 L364 36.8 L378 36.0 L392 35.4 L406 35.1 L420 35.2" stroke="#4A3524" stroke-opacity="0.5" stroke-width="1.2" fill="none"/><path d="M0 44.1 L14 44.6 L28 45.1 L42 45.5 L56 45.8 L70 46.0 L84 46.1 L98 45.9 L112 45.6 L126 45.2 L140 44.8 L154 44.3 L168 43.9 L182 43.6 L196 43.4 L210 43.4 L224 43.6 L238 43.9 L252 44.4 L266 44.9 L280 45.3 L294 45.7 L308 46.0 L322 46.1 L336 46.0 L350 45.8 L364 45.4 L378 45.0 L392 44.5 L406 44.0 L420 43.7" stroke="#4A3524" stroke-opacity="0.3" stroke-width="0.8" fill="none"/><path d="M0 51.8 L14 51.5 L28 51.3 L42 51.3 L56 51.4 L70 51.7 L84 52.1 L98 52.6 L112 52.9 L126 53.2 L140 53.2 L154 53.1 L168 52.8 L182 52.5 L196 52.0 L210 51.7 L224 51.4 L238 51.2 L252 51.3 L266 51.5 L280 51.9 L294 52.3 L308 52.7 L322 53.0 L336 53.2 L350 53.2 L364 53.0 L378 52.7 L392 52.3 L406 51.9 L420 51.5" stroke="#4A3524" stroke-opacity="0.38" stroke-width="1.2" fill="none"/><path d="M0 59.1 L14 59.6 L28 59.8 L42 59.7 L56 59.3 L70 58.7 L84 57.9 L98 57.0 L112 56.3 L126 55.8 L140 55.5 L154 55.6 L168 55.9 L182 56.6 L196 57.3 L210 58.2 L224 58.9 L238 59.5 L252 59.8 L266 59.8 L280 59.5 L294 58.9 L308 58.2 L322 57.3 L336 56.5 L350 55.9 L364 55.6 L378 55.5 L392 55.8 L406 56.3 L420 57.1" stroke="#4A3524" stroke-opacity="0.38" stroke-width="0.8" fill="none"/><path d="M0 66.0 L14 66.3 L28 66.6 L42 66.9 L56 67.2 L70 67.4 L84 67.5 L98 67.6 L112 67.6 L126 67.5 L140 67.4 L154 67.2 L168 66.9 L182 66.6 L196 66.3 L210 66.0 L224 65.7 L238 65.5 L252 65.3 L266 65.1 L280 65.1 L294 65.1 L308 65.2 L322 65.3 L336 65.5 L350 65.8 L364 66.0 L378 66.3 L392 66.7 L406 66.9 L420 67.2" stroke="#4A3524" stroke-opacity="0.38" stroke-width="1" fill="none"/><path d="M0 73.1 L14 72.6 L28 72.3 L42 72.3 L56 72.5 L70 72.9 L84 73.4 L98 74.1 L112 74.6 L126 75.1 L140 75.3 L154 75.3 L168 75.1 L182 74.7 L196 74.1 L210 73.5 L224 72.9 L238 72.5 L252 72.3 L266 72.3 L280 72.6 L294 73.1 L308 73.6 L322 74.3 L336 74.8 L350 75.2 L364 75.4 L378 75.3 L392 75.0 L406 74.5 L420 73.9" stroke="#4A3524" stroke-opacity="0.22" stroke-width="1" fill="none"/><path d="M0 80.8 L14 81.5 L28 81.8 L42 81.8 L56 81.3 L70 80.6 L84 79.8 L98 79.0 L112 78.6 L126 78.6 L140 78.9 L154 79.6 L168 80.4 L182 81.2 L196 81.7 L210 81.8 L224 81.6 L238 81.0 L252 80.2 L266 79.4 L280 78.8 L294 78.5 L308 78.7 L322 79.2 L336 80.0 L350 80.8 L364 81.5 L378 81.8 L392 81.8 L406 81.3 L420 80.6" stroke="#4A3524" stroke-opacity="0.5" stroke-width="1" fill="none"/><path d="M0 89.4 L14 88.5 L28 87.3 L42 86.3 L56 85.8 L70 86.0 L84 86.8 L98 88.0 L112 89.1 L126 89.7 L140 89.7 L154 88.9 L168 87.8 L182 86.6 L196 85.9 L210 85.8 L224 86.4 L238 87.5 L252 88.7 L266 89.5 L280 89.8 L294 89.3 L308 88.3 L322 87.1 L336 86.1 L350 85.8 L364 86.1 L378 87.0 L392 88.2 L406 89.3 L420 89.8" stroke="#4A3524" stroke-opacity="0.38" stroke-width="0.8" fill="none"/><path d="M0 96.2 L14 96.2 L28 96.1 L42 95.8 L56 95.4 L70 95.0 L84 94.5 L98 94.1 L112 93.8 L126 93.5 L140 93.4 L154 93.5 L168 93.7 L182 94.0 L196 94.4 L210 94.9 L224 95.3 L238 95.7 L252 96.0 L266 96.2 L280 96.2 L294 96.1 L308 95.8 L322 95.5 L336 95.0 L350 94.6 L364 94.1 L378 93.8 L392 93.5 L406 93.4 L420 93.5" stroke="#4A3524" stroke-opacity="0.3" stroke-width="1.2" fill="none"/><path d="M0 101.7 L14 102.3 L28 102.7 L42 102.8 L56 102.5 L70 102.0 L84 101.3 L98 100.5 L112 99.7 L126 99.2 L140 98.8 L154 98.8 L168 99.1 L182 99.6 L196 100.4 L210 101.1 L224 101.9 L238 102.4 L252 102.7 L266 102.7 L280 102.4 L294 101.9 L308 101.1 L322 100.3 L336 99.6 L350 99.1 L364 98.8 L378 98.8 L392 99.2 L406 99.8 L420 100.5" stroke="#4A3524" stroke-opacity="0.38" stroke-width="0.8" fill="none"/><path d="M0 110.8 L14 110.6 L28 110.0 L42 109.4 L56 108.6 L70 107.9 L84 107.3 L98 107.0 L112 106.9 L126 107.1 L140 107.6 L154 108.3 L168 109.0 L182 109.7 L196 110.3 L210 110.7 L224 110.9 L238 110.7 L252 110.3 L266 109.6 L280 108.9 L294 108.1 L308 107.5 L322 107.1 L336 106.9 L350 107.0 L364 107.4 L378 108.0 L392 108.7 L406 109.5 L420 110.1" stroke="#4A3524" stroke-opacity="0.38" stroke-width="1.2" fill="none"/><path d="M0 118.4 L14 118.5 L28 118.5 L42 118.4 L56 118.3 L70 118.1 L84 117.8 L98 117.6 L112 117.3 L126 117.1 L140 116.9 L154 116.8 L168 116.8 L182 116.9 L196 117.0 L210 117.2 L224 117.4 L238 117.7 L252 117.9 L266 118.2 L280 118.4 L294 118.5 L308 118.5 L322 118.5 L336 118.4 L350 118.2 L364 117.9 L378 117.7 L392 117.4 L406 117.2 L420 117.0" stroke="#4A3524" stroke-opacity="0.3" stroke-width="0.6" fill="none"/><ellipse cx="110" cy="60" rx="7.8" ry="2.1" stroke="#4A3524" stroke-opacity="0.45" stroke-width=".8" fill="none"/><ellipse cx="110" cy="60" rx="15.6" ry="4.2" stroke="#4A3524" stroke-opacity="0.37" stroke-width=".8" fill="none"/><ellipse cx="110" cy="60" rx="26.0" ry="7.0" stroke="#4A3524" stroke-opacity="0.29" stroke-width=".8" fill="none"/><ellipse cx="110" cy="60" rx="39.0" ry="10.5" stroke="#4A3524" stroke-opacity="0.21" stroke-width=".8" fill="none"/><ellipse cx="320" cy="30" rx="7.8" ry="2.1" stroke="#4A3524" stroke-opacity="0.45" stroke-width=".8" fill="none"/><ellipse cx="320" cy="30" rx="15.6" ry="4.2" stroke="#4A3524" stroke-opacity="0.37" stroke-width=".8" fill="none"/><ellipse cx="320" cy="30" rx="26.0" ry="7.0" stroke="#4A3524" stroke-opacity="0.29" stroke-width=".8" fill="none"/><ellipse cx="320" cy="30" rx="39.0" ry="10.5" stroke="#4A3524" stroke-opacity="0.21" stroke-width=".8" fill="none"/></pattern><filter id="tx-wood" x="0" y="0" width="1" height="1"><feTurbulence type="fractalNoise" baseFrequency="0.004 0.03" numOctaves="2" seed="4" result="w"/><feDisplacementMap in="SourceGraphic" in2="w" scale="14" xChannelSelector="R" yChannelSelector="G"/></filter>
 ${texFilter('stone','<feTurbulence type="fractalNoise" baseFrequency="0.07" numOctaves="4" seed="2" result="n"/>',.55,1.1,.04)}
 ${texFilter('metal','<feTurbulence type="fractalNoise" baseFrequency="0.9 0.004" numOctaves="2" seed="5" result="n"/>',.45,.25,.04)}
 ${texFilter('plastic','<feTurbulence type="fractalNoise" baseFrequency="0.004" numOctaves="1" seed="6" result="n"/>',.12,.3,.05)}
@@ -445,7 +453,7 @@ ${texFilter('rattan',SRC_G,.7,2.2,.08)}
 
 function matTexture(m,x,y,w,h,op=1){
   if(m==='glass') return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#glassHi)" opacity="${op}"/>`;
-  const src=['tile','fabric','rattan'].includes(m)?`url(#p-${m})`:'#fff';
+  const src=['tile','fabric','rattan','wood'].includes(m)?`url(#p-${m})`:'#fff';
   return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${src}" filter="url(#tx-${m})" style="mix-blend-mode:multiply" opacity="${op}"/>`;
 }
 function matSurface(m,x,y,w,h,color){
@@ -528,6 +536,7 @@ function glowDefs(){
   let d=`<radialGradient id="lg-${L.id}" gradientUnits="userSpaceOnUse" cx="${L.x}" cy="${L.y}" r="${r}">${[[0,1],[.08+.1*(1-sp),.82],[.3,.5],[.55,.24],[.78,.08],[1,0]].map(([o,f])=>`<stop offset="${o.toFixed(3)}" stop-color="${c}" stop-opacity="${(a0*f).toFixed(3)}"/>`).join('')}</radialGradient>
   <radialGradient id="lo-${L.id}"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset=".3" stop-color="${c}" stop-opacity=".95"/><stop offset=".65" stop-color="${c}" stop-opacity=".45"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient>
   <clipPath id="lc-${L.id}" ${z?`clip-path="url(#cz-${z.id})"`:''}><polygon points="${bx0},0 ${bx1},0 ${fx1},${fy} ${fx0},${fy}"/><rect x="${fx0}" y="${fy}" width="${fx1-fx0}" height="${face}"/>${wallOf('back')?`<rect x="${bx0}" y="${-WALLH}" width="${bx1-bx0}" height="${WALLH}"/>`:''}${wallOf('left')?`<polygon points="${fx0},${-WALLH*1.45} ${bx0},${-WALLH} ${bx0},0 ${fx0},${fy}"/>`:''}${wallOf('right')?`<polygon points="${fx1},${-WALLH*1.45} ${bx1},${-WALLH} ${bx1},0 ${fx1},${fy}"/>`:''}${surf('ceiling')?`<polygon points="${ceilPts()}"/>`:''}</clipPath>
+  <radialGradient id="tt-${L.id}"><stop offset="0" stop-color="${c}" stop-opacity="1"/><stop offset=".55" stop-color="${c}" stop-opacity=".7"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient>
   <radialGradient id="dh-${L.id}">${[[0,1],[.35,.9],[.6,.6],[.82,.25],[1,0]].map(([o,f])=>`<stop offset="${o}" stop-color="#000" stop-opacity="${(f*(.85+.15*L.strength)).toFixed(3)}"/>`).join('')}</radialGradient>`;
   if(L.type==='spot'){const t=spotTarget(L);const wb=120+sp*520;
     d+=`<linearGradient id="lb-${L.id}" gradientUnits="userSpaceOnUse" x1="0" y1="${L.y}" x2="0" y2="${t.y}"><stop offset="0" stop-color="${c}" stop-opacity="${(.5*a0).toFixed(3)}"/><stop offset="1" stop-color="${c}" stop-opacity="${(.12*a0).toFixed(3)}"/></linearGradient>
@@ -570,12 +579,17 @@ function objLight(it){
   const Ls=lights();if(!Ls.length)return '';const b=bbox(it);const cx=b.x+b.w/2,cy=b.y+b.h/2;const m=`mask="url(#mk-${it.id})"`;
   const rect=(fill,op,blend)=>`<rect x="${b.x-4}" y="${b.y-4}" width="${b.w+8}" height="${b.h+8}" fill="${fill}" opacity="${op.toFixed(3)}" ${m} style="mix-blend-mode:${blend}" pointer-events="none"/>`;
   let g='',maxF=0;
-  const w=Ls.reduce((a,L)=>a+L.warmth,0)/Ls.length,st=Ls.reduce((a,L)=>a+L.strength,0)/Ls.length,amt=Math.abs(w-.5)*2;
-  if(amt>.04)g+=rect(lightColor(w),amt*(.24+.24*st),'multiply');
-  Ls.forEach(L=>{const z=lightZone(L);if(z&&zoneAt(it.x,it.y)!==z)return;
+  const reach=L=>{const z=lightZone(L);if(z&&zoneAt(it.x,it.y)!==z)return {f:0,d:1e9};
     const R_=L.type==='spot'?(120+spr(L)*520)*.6+b.w*.5:glowR(L)*.95;
     const lx=L.type==='spot'?spotTarget(L).x:L.x;const d=(L.type==='spot'||L.depth==='back')?Math.abs(cx-lx)*(L.depth==='back'?.7:1):Math.hypot(cx-L.x,cy-L.y);
-    const f=clamp(1-d/R_,0,1)*(.45+.55*L.strength);maxF=Math.max(maxF,f);if(f<.02)return;
+    return {f:clamp(1-d/R_,0,1)*(.45+.55*L.strength),d}};
+  const rs=Ls.map(reach),sumF=rs.reduce((a,r)=>a+r.f,0);
+  const near=Ls[rs.reduce((bi,r,i)=>r.d<rs[bi].d?i:bi,0)];
+  Ls.forEach((L,i)=>{const amt=Math.abs(L.warmth-.5)*2;if(amt<.04)return;
+    const wgt=sumF>.02?(rs[i].f/sumF)*Math.min(1,.45+sumF):(L===near?.5:0);
+    if(wgt>.01)g+=rect(lightColor(L.warmth),amt*(.24+.24*L.strength)*wgt,'multiply')});
+  const w=near.warmth;
+  Ls.forEach((L,i)=>{const f=rs[i].f;maxF=Math.max(maxF,f);if(f<.02)return;
     const c=lightColor(L.warmth),gid=`ol-${it.id}-${L.id}`;
     if(L.depth==='back'){
       g+=rect(shadowCol(L.warmth),.55*f,'multiply');
@@ -667,9 +681,12 @@ function darkness(){
     <rect x="${b.x0}" y="${b.y0}" width="${b.x1-b.x0}" height="${b.y1-b.y0}" fill="${shadowCol(Ls.reduce((a,L)=>a+L.warmth,0)/Ls.length)}" opacity=".34" mask="url(#darkM)" clip-path="url(#surfAll)" style="mix-blend-mode:multiply" pointer-events="none"/>`;
 }
 function tint(){
-  const Ls=lights();if(!Ls.length)return '';const w=Ls.reduce((a,L)=>a+L.warmth,0)/Ls.length,st=Ls.reduce((a,L)=>a+L.strength,0)/Ls.length;
-  const amt=Math.abs(w-.5)*2;if(amt<.04)return '';const b=visBounds();
-  return `<rect x="${b.x0}" y="${b.y0}" width="${b.x1-b.x0}" height="${b.y1-b.y0}" fill="${lightColor(w)}" opacity="${(amt*(.13+.17*st)).toFixed(3)}" clip-path="url(#surfAll)" style="mix-blend-mode:multiply" pointer-events="none"/>`;
+  const Ls=lights();if(!Ls.length)return '';const b=visBounds(),n=Ls.length;
+  return Ls.map(L=>{const amt=Math.abs(L.warmth-.5)*2;if(amt<.04)return '';const z=lightZone(L);const zc=z?`<g clip-path="url(#cz-${z.id})">`:'<g>';
+    const c=lightColor(L.warmth),st=L.strength;
+    const glob=n===1?`<rect x="${b.x0}" y="${b.y0}" width="${b.x1-b.x0}" height="${b.y1-b.y0}" fill="${c}" opacity="${(amt*(.06+.08*st)).toFixed(3)}" style="mix-blend-mode:multiply"/>`:'';
+    const p=L.type==='spot'?spotTarget(L):{x:L.x,y:L.y};const r=(L.type==='spot'?(120+spr(L)*520)*1.1:glowR(L)*1.25);
+    return `<g clip-path="url(#surfAll)" pointer-events="none">${zc}${glob}<circle cx="${p.x}" cy="${p.y}" r="${r}" fill="url(#tt-${L.id})" opacity="${(amt*(.16+.2*st)).toFixed(3)}" style="mix-blend-mode:multiply"/></g></g>`}).join('');
 }
 function selection(){
   const it=find(ui.sel);if(!it)return '';const b=bbox(it);if(!b)return '';
@@ -739,7 +756,7 @@ function focusItem(it){const b=bbox(it);if(!b)return;const v=visArea();
 
 /* ---------------- adding ---------------- */
 function viewCenter(){const v=visArea();return {x:(v.l+v.w/2-V.tx)/V.k,y:(v.H/2-V.ty)/V.k}}
-function blank(kind,props){return Object.assign({id:uid(),kind,memo:'',answers:{reason:'',memory:'',scene:'',presence:'',shaped:''},senses:[],want:'',ways:[],essence:[],how:'',letgo:''},props)}
+function blank(kind,props){return Object.assign({id:uid(),kind,memo:'',answers:{reason:'',restyle:'',memory:'',scene:'',presence:'',shaped:''},senses:[],want:'',ways:[],essence:[],how:'',letgo:''},props)}
 function addItem(kind,props){
   const c=viewCenter();const n=S.items.length;const OFF=[0,-380,380,-190,190,-570,570,-95,285,-285,475,-475];
   const same=S.items.filter(i=>(kind==='color'||kind==='material')?(i.kind==='color'||i.kind==='material'):i.kind===kind).length;const jit=OFF[same%OFF.length]+Math.floor(same/OFF.length)*40;
@@ -807,6 +824,13 @@ function shortName(it){
   if(it.kind==='ceiling')return '天花板';
   return it.label?`範圍 · ${it.label}`:'範圍';
 }
+function colName(c){const i=PALETTE.indexOf(c);return i>=0?PALNAMES[i]+'色':'這個顏色'}
+function restyleQ(it){
+  if(it.kind==='light'){const t=it.warmth>.62?'偏暖':it.warmth<.38?'偏冷':'自然';return `你把這道光設成${it.type==='spot'?'聚光':'散光'}、${t}的光，為什麼這樣調？`}
+  if(['object','zone','wall','floor','ceiling'].includes(it.kind)&&(it.color||it.material)){
+    const ex=[];if(it.color)ex.push(colName(it.color));if(it.material)ex.push(mat(it.material).name);
+    return `你為它加上了${ex.join('、')}，為什麼這樣選？`}
+  return ''}
 function fullName(it){
   let n=shortName(it);
   if(it.kind==='color')n+=' '+it.color.toUpperCase();
@@ -937,14 +961,10 @@ function renderRight(){
     const qa=(k,en,zh,q)=>`<div class="r"><div class="k">${en}<small>${zh}</small></div><div class="v"><span class="q">${q}</span><textarea class="lined" id="a-${k}" data-a="${k}" placeholder="寫幾句就好，想到什麼都可以">${esc(it.answers[k])}</textarea></div></div>`;
     R.innerHTML=`<div class="rbody">${head(2,`說說這個${KN[it.kind]}`,`STEP 02 · TRACE · ${ui.qi+1}/${n}`)}
       <div class="rec">${recTop(it)}
-        ${qa('reason','Q.01','','你為什麼選它？')}
-        ${qa('memory','Q.02','','它讓你想起什麼？')}
-        ${qa('scene','Q.03','','在那裡，通常有誰？會發生什麼事？')}
-        ${qa('presence','Q.04','','它對你來說是什麼樣的存在？')}
-        ${qa('shaped','Q.05','','你曾經怎麼使用、改變或佈置它？（可不寫）')}
-        <div class="r"><div class="k">Q.06</div><div class="v"><span class="q">它最讓你記得的是什麼？（可複選，可跳過）</span><div class="checks">${SENSES.map(([k,t])=>`<button class="chk ${it.senses.includes(k)?'on':''}" data-s="${k}"><span class="bx"></span>${t}</button>`).join('')}</div></div></div>
+        ${(()=>{const rq=restyleQ(it);let k=0;const N=()=>'Q.'+String(++k).padStart(2,'0');
+          return qa('reason',N(),'','你為什麼選它？')+(rq?qa('restyle',N(),'',rq):'')+qa('memory',N(),'','它讓你想起什麼？')+qa('scene',N(),'','在那裡，通常有誰？會發生什麼事？')+qa('presence',N(),'','它對你來說是什麼樣的存在？')+qa('shaped',N(),'','你曾經怎麼使用、改變或佈置它？（可不寫）')+`<div class="r"><div class="k">${N()}</div>`})()}<div class="v"><span class="q">它最讓你記得的是什麼？（可複選，可跳過）</span><div class="checks">${SENSES.map(([k,t])=>`<button class="chk ${it.senses.includes(k)?'on':''}" data-s="${k}"><span class="bx"></span>${t}</button>`).join('')}</div></div></div>
       </div></div>${nav(ui.qi?'上一個':'上一步',ui.qi<n-1?'下一個':'都說完了，下一步',ui.qi<n-1?'NEXT ITEM':'NEXT')}`;
-    R.querySelectorAll('[data-a]').forEach(el=>{el.oninput=()=>{it.answers[el.dataset.a]=el.value;save()};el.onchange=()=>{log('answer',{id:it.id,q:el.dataset.a,text:el.value});renderLeft()}});
+    R.querySelectorAll('[data-a]').forEach(el=>{el.oninput=()=>{it.answers[el.dataset.a]=el.value;save()};el.onchange=()=>{const qe=el.closest('.v')&&el.closest('.v').querySelector('.q');log('answer',{id:it.id,q:el.dataset.a,prompt:qe?qe.textContent:'',text:el.value});renderLeft()}});
     R.querySelectorAll('[data-s]').forEach(el=>el.onclick=()=>{const k=el.dataset.s;it.senses=it.senses.includes(k)?it.senses.filter(x=>x!==k):[...it.senses,k];log('sense',{id:it.id,senses:it.senses});el.classList.toggle('on')});
     $('back').onclick=()=>{if(ui.qi){ui.qi--;stepItem()}else go(1)};
     $('next').onclick=()=>{if(ui.qi<n-1){ui.qi++;stepItem()}else{ui.qi=0;go(3)}};
@@ -1063,7 +1083,7 @@ function renderCards(){
       <div><div class="k">RESIDENT<small>現住</small></div><div class="val">${S.home.current==='yes'?'是':S.home.current==='no'?'不是':'—'}</div></div>
       <div><div class="k">SYMBOLS<small>符號</small></div><div class="pxv">${String(S.items.length).padStart(2,'0')}</div></div>
       ${S.whole?`<div class="sent" style="font-size:14px;color:#4a4a46">${esc(S.whole)}</div>`:''}<div class="sent">${S.sentence?esc(S.sentence):'<span style="color:var(--mute);font-size:14px;font-family:var(--sans)">在右邊寫下一句話：這個家是……</span>'}</div>
-    </div>`+planHTML()+S.items.map(it=>{
+    </div>`+rankHTML()+planHTML()+(S.rank&&S.rank.length?[...S.items].sort((x,y)=>{const a=S.rank.indexOf(x.id),b=S.rank.indexOf(y.id);return (a<0?999:a)-(b<0?999:b)}):S.items).map(it=>{
       const d=WANT.find(x=>x[0]===it.want);const a=it.answers;
       const row=(k,v)=>v?`<div><span class="k">${k}</span><span class="tw">${v}</span></div>`:'';
       const lab=(arr,ks)=>ks.map(k=>arr.find(c=>c[0]===k)[1]).join('、');
@@ -1071,7 +1091,7 @@ function renderCards(){
         <div class="h"><div><span class="k">Inv. nr</span><span class="tw">${nr(it)}</span>${S.rank&&S.rank.includes(it.id)?`<span class="k" style="margin-left:auto">RANK ${String(S.rank.indexOf(it.id)+1).padStart(2,'0')}</span>`:''}</div><div><span class="k">Typ</span><span class="k" style="color:var(--mute)">${KE[it.kind]}</span></div></div>
         <div class="b"><div class="fl">
           ${row('名稱',esc(fullName(it)))}${row('備忘',esc(it.memo))}
-          ${row('為什麼選',esc(a.reason))}${row('想起',esc(a.memory))}${row('誰・什麼事',esc(a.scene))}${row('存在',esc(a.presence))}${row('曾經改變',esc(a.shaped))}
+          ${row('為什麼選',esc(a.reason))}${row('顏色・材質・光',esc(a.restyle))}${row('想起',esc(a.memory))}${row('誰・什麼事',esc(a.scene))}${row('存在',esc(a.presence))}${row('曾經改變',esc(a.shaped))}
           ${row('記得',it.senses.map(sen).join('、'))}
           ${row('怎麼出現',lab(WAYS,it.ways))}${row('要保留',lab(ESSENCE,it.essence))}
           ${row('再發生',esc(it.how))}${row('放下',esc(it.letgo))}
@@ -1080,6 +1100,11 @@ function renderCards(){
         ${d?`<div class="stamp">${d[1]}<small>${d[2]}</small></div>`:''}
       </article>`}).join('');
 }
+function rankHTML(){
+  const r=(S.rank||[]).filter(id=>find(id));if(!r.length)return '';
+  return `<section class="plan rankbox"><div class="ph"><span class="k">RANK</span><b>重要程度排序</b></div>
+    <ol class="rkl">${r.map((id,i)=>{const it=find(id);return `<li><span class="rn">${String(i+1).padStart(2,'0')}</span><span class="th">${thumb(it)}</span><span class="nm">${esc(fullName(it))}</span></li>`}).join('')}</ol>
+    ${S.rankWhy?`<div class="why"><span class="k">WHY<small>為什麼這樣排</small></span><p>${esc(S.rankWhy)}</p></div>`:''}</section>`}
 function planHTML(){
   const cols=PHASES.map(([ph,t,e])=>{
     const rows=[];S.items.forEach(it=>{if(!it.want||it.want==='no')return;it.ways.filter(w=>WAYS.find(x=>x[0]===w)[3]===ph).forEach(w=>rows.push(`<div class="pi"><span class="no">No.${nr(it)}</span> ${esc(shortName(it))}<br><b>${WAYS.find(x=>x[0]===w)[1]}</b>${it.want==='must'?' <span class="must">必要</span>':''}${ph==='ongoing'&&it.how?`<small>${esc(it.how)}</small>`:''}${it.essence.length?`<small>要保留：${it.essence.map(k=>ESSENCE.find(c=>c[0]===k)[1]).join('、')}</small>`:''}</div>`))});
@@ -1114,5 +1139,6 @@ async function finish(){
 }
 load();renderAll();
 </script>
+
 
 </body></html>
