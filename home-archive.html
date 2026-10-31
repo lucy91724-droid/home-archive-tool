@@ -492,7 +492,7 @@ function bbox(it){
     if(it.rot){const cx=it.x,cy=it.y-it.size/2,a=it.rot*Math.PI/180,c=Math.cos(a),s=Math.sin(a);const pts=[[x,y],[x+w,y],[x,y+h],[x+w,y+h]].map(([px,py])=>[cx+(px-cx)*c-(py-cy)*s,cy+(px-cx)*s+(py-cy)*c]);
       const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);x=Math.min(...xs);y=Math.min(...ys);w=Math.max(...xs)-x;h=Math.max(...ys)-y}
     return {x,y,w,h}}
-  if(it.kind==='color')return {x:it.x-it.size/2,y:it.y-it.size*.65,w:it.size,h:it.size*1.3};
+  if(it.kind==='color')return {x:it.x-it.size/2,y:it.y-it.size/2,w:it.size,h:it.size};
   if(it.kind==='material')return {x:it.x-it.size/2,y:it.y-it.size*.36,w:it.size,h:it.size*.72};
   if(it.kind==='light'){const o=30+18*it.strength;return {x:it.x-o,y:it.y-o,w:2*o,h:2*o}}
   if(it.kind==='zone')return {x:it.x,y:it.y,w:it.w,h:it.h};
@@ -570,6 +570,7 @@ function objShadows(it){
   }).join('');
 }
 function panelShadow(it){
+  if(it.kind==='color')return '';
   const b=bbox(it);const L=lightsFor(it.x,it.y)[0];const dx=clamp((it.x-L.x)/300,-1.5,1.5)*12;
   if(!wallOf('back'))return '';
   return `<g opacity=".4" filter="url(#grainSh)" style="mix-blend-mode:multiply" pointer-events="none"><g clip-path="url(#clipWall)"><rect x="${b.x+dx}" y="${b.y+10}" width="${b.w}" height="${b.h}" fill="${shadowCol(L.warmth??.5)}" fill-opacity=".6"/></g></g>`;
@@ -622,11 +623,8 @@ function itemNode(it){
   let g='';const b=bbox(it);
   if(it.kind==='object'){g=objBody(it)+objLight(it)+objLines(it)}
   else if(it.kind==='color'){
-    const lh=b.h*.22;
-    g=`<rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" fill="#FAFAF7" stroke="#141414" stroke-opacity=".35" vector-effect="non-scaling-stroke"/>
-       <rect x="${b.x+6}" y="${b.y+6}" width="${b.w-12}" height="${b.h-lh-6}" fill="${it.color}"/>
-`
-       +caption(it,it.x,b.y+b.h+18);
+    const bl=it.blur||0;
+    g=`<rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" fill="${it.color}" ${bl>.01?`filter="url(#cb-${it.id})"`:''}/>`;
   }
   else if(it.kind==='material'){
     g=`${matSurface(it.material,b.x,b.y,b.w,b.h,it.color)}
@@ -651,6 +649,15 @@ function itemNode(it){
   const dim=(S.step===2||S.step===4)&&ui.sel&&ui.sel!==it.id;
   return `<g class="it" data-id="${it.id}" ${dim?'opacity=".28"':''} style="cursor:${S.step===1?'move':'pointer'}">${g}</g>`;
 }
+function colorBlurDef(it){const bl=it.blur||0;if(bl<=.01)return '';const b=bbox(it);const sd=bl*it.size*.42,pad=sd*3+10;
+  const seed=[...it.id].reduce((a,c)=>a+c.charCodeAt(0),0)%97;
+  return `<filter id="cb-${it.id}" filterUnits="userSpaceOnUse" x="${b.x-pad}" y="${b.y-pad}" width="${b.w+2*pad}" height="${b.h+2*pad}" color-interpolation-filters="sRGB">
+  <feGaussianBlur in="SourceAlpha" stdDeviation="${sd.toFixed(1)}" result="a"/>
+  <feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="1" seed="${seed}" result="n"/>
+  <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3 0 0 0 -.95" result="t"/>
+  <feComposite in="a" in2="t" operator="arithmetic" k1="0" k2="7" k3="-7" k4="0" result="d"/>
+  <feComposite in="d" in2="a" operator="arithmetic" k1="0" k2=".9" k3=".18" k4="0" result="m"/>
+  <feFlood flood-color="${it.color}"/><feComposite in2="m" operator="in"/></filter>`}
 function surfShapes(){const {bx0,bx1,fx0,fx1,fy,face}=STAGE;
   return `<polygon points="${bx0},0 ${bx1},0 ${fx1},${fy} ${fx0},${fy}"/><rect x="${fx0}" y="${fy}" width="${fx1-fx0}" height="${face}"/>${wallOf('back')?`<rect x="${bx0}" y="${-WALLH}" width="${bx1-bx0}" height="${WALLH}"/>`:''}${wallOf('left')?`<polygon points="${fx0},${-WALLH*1.45} ${bx0},${-WALLH} ${bx0},0 ${fx0},${fy}"/>`:''}${wallOf('right')?`<polygon points="${fx1},${-WALLH*1.45} ${bx1},${-WALLH} ${bx1},0 ${fx1},${fy}"/>`:''}${surf('ceiling')?`<polygon points="${ceilPts()}"/>`:''}`}
 function litClipDef(){
@@ -703,7 +710,7 @@ function renderStage(){
   const b=visBounds();
   const zs=zones(),objs=S.items.filter(i=>i.kind==='object'),panels=S.items.filter(i=>(i.kind==='color'||i.kind==='material')&&i.mode==='panel');
   let defs=zs.map(z=>`<clipPath id="cz-${z.id}"><rect x="${z.x}" y="${z.y}" width="${z.w}" height="${z.h}"/></clipPath>`).join('')+glowDefs()
-    +objs.map(objMaskDefs).join('')+surfAllDef();
+    +objs.map(objMaskDefs).join('')+S.items.filter(i=>i.kind==='color'&&i.mode==='panel').map(colorBlurDef).join('')+surfAllDef();
   const order={zone:0,color:1,material:1,object:2,light:3};
   const items=S.items.filter(i=>bbox(i)&&(i.kind!=='color'&&i.kind!=='material'||i.mode==='panel')).sort((a,c)=>(order[a.kind]-order[c.kind])||(a.y-c.y));
   const world=background(b)+draftLines()+glows(1)+darkness()+panels.map(panelShadow).join('')+objs.map(objShadows).join('')+items.filter(i=>i.kind!=='light').map(itemNode).join('')+tint()+items.filter(i=>i.kind==='light').map(itemNode).join('')+selection();
@@ -766,7 +773,7 @@ function addItem(kind,props){
   else if(kind==='object')it=blank(kind,{x:c.x+jit,y:150+(n%3)*45,size:430,...props});
   else if(kind==='light')it=blank(kind,{x:c.x+jit+200,y:-430,warmth:.78,strength:.6,spread:.5,type:'glow',...props});
   else if(kind==='zone')it=blank(kind,{x:c.x-300+jit*.3,y:-220,w:600,h:440,label:'',...props});
-  else it=blank(kind,{x:c.x+jit,y:-330,size:kind==='color'?170:240,mode:'panel',...props});
+  else it=blank(kind,{x:c.x+jit,y:-330,size:kind==='color'?300:240,mode:'panel',...props});
   if(kind==='ceiling'){const v=visArea();const top=WALLH*1.45,bot=STAGE.fy+STAGE.face;V.k=Math.min(V.k,v.H*.9/(top+bot));V.ty=v.H*.05+top*V.k;V.tx=v.l+v.w/2}
   S.items.push(it);ui.sel=it.id;log('add',{id:it.id,kind,ref:it.ref,color:it.color,material:it.material,type:it.type});renderAll();
   toast(kind==='wall'?'已加入牆面':kind==='floor'?'已鋪上地板':'已放入，可以拖曳調整位置');
@@ -808,7 +815,7 @@ function thumb(it){
   if(it.kind==='wall'){if(it.material)return `<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#F7F6F3"/>${matSurface(it.material,18,0,64,62,it.color)}<rect x="18" y="0" width="64" height="62" fill="url(#thWall)"/><polygon points="18,62 82,62 100,80 0,80" fill="#ECE8E1"/><rect y="80" width="100" height="20" fill="#CFCAC1"/></svg>`;return miniField('',surfColor(it,'#F9F8F6'))}
   if(it.kind==='ceiling')return ceilThumb(surfColor(it,'#EBEAE6'));
   if(it.kind==='floor'){if(it.material)return `<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#F7F6F3"/><clipPath id="tf-${it.id}"><polygon points="18,62 82,62 100,80 0,80"/></clipPath><g clip-path="url(#tf-${it.id})">${matSurface(it.material,0,62,100,18,it.color)}</g><rect y="80" width="100" height="20" fill="${shade(surfColor(it,'#F3F1EC'),-.45)}"/></svg>`;return miniField('',null,surfColor(it,'#F3F1EC'))}
-  if(it.kind==='color')return miniField(`<rect x="34" y="16" width="32" height="40" fill="#FAFAF7"/><rect x="36.5" y="18.5" width="27" height="29" fill="${it.color}"/>`);
+  if(it.kind==='color')return miniField(`<rect x="34" y="20" width="32" height="32" fill="${it.color}" ${(it.blur||0)>.2?'filter="url(#soft)" opacity=".85"':''}/>`);
   if(it.kind==='material')return `<svg viewBox="0 0 100 100">${matSurface(it.material,0,0,100,100,it.color)}</svg>`;
   if(it.kind==='light'){const c=lightColor(it.warmth);return miniField(it.type==='spot'?`<polygon points="47,14 53,14 70,70 30,70" fill="${c}" opacity=".35"/><ellipse cx="50" cy="70" rx="20" ry="6" fill="${c}" opacity=".8"/><circle cx="50" cy="14" r="6" fill="#fff"/>`:`<circle cx="50" cy="38" r="${26+18*(it.spread??.5)}" fill="${c}" opacity="${.3+it.strength*.4}" filter="url(#soft)"/><circle cx="50" cy="38" r="8" fill="#fff"/><circle cx="50" cy="38" r="13" fill="${c}" opacity=".6" filter="url(#soft)"/>`)}
   if(it.kind==='zone')return miniField(`<rect x="20" y="22" width="60" height="56" fill="${it.color||'#fff'}" fill-opacity="${it.color?.35:.06}" stroke="#3A3834" stroke-dasharray="4 3"/>`);
@@ -918,13 +925,14 @@ function inspector(it){
      ${it.type==='spot'?`<div class="r"><div class="k">ANGLE<small>照射角度</small></div><div class="v"><div class="rng"><span>↙</span><input type="range" min="-60" max="60" step="1" value="${it.angle||0}" data-p="angle" aria-label="照射角度"><span>↘</span></div></div></div>`:''}<div class="r"><div class="k">SPREAD<small>集中／散開</small></div><div class="v"><div class="rng"><span>集中</span><input type="range" min="0" max="1" step=".01" value="${it.spread??.5}" data-p="spread" aria-label="集中或散開"><span>散開</span></div></div></div>
      <div class="r"><div class="k">REACH<small>範圍</small></div><div class="v" style="font-size:12.5px">${lightZone(it)?`只照亮 No.${nr(lightZone(it))} ${esc(shortName(lightZone(it)))}`:'照亮整個場景'}</div></div>`;
   if(it.kind==='object')r+=`<div class="r"><div class="k">ROTATE<small>旋轉</small></div><div class="v"><div class="rng"><span>↺</span><input type="range" min="-180" max="180" step="1" value="${it.rot||0}" data-p="rot" aria-label="旋轉"><span>↻</span></div><div class="chips"><button class="chip ${it.flip?'on':''}" data-flip>左右翻轉</button><button class="chip" data-rot0>轉正</button></div></div></div>`;
-  if(['object','color','material'].includes(it.kind)&&bbox(it))r+=`<div class="r"><div class="k">SCALE<small>大小</small></div><div class="v"><div class="rng"><span>小</span><input type="range" min="${it.kind==='object'?120:80}" max="${it.kind==='object'?760:420}" step="1" value="${it.size}" data-p="size" aria-label="大小"><span>大</span></div></div></div>`;
+  if(['object','color','material'].includes(it.kind)&&bbox(it))r+=`<div class="r"><div class="k">SCALE<small>大小</small></div><div class="v"><div class="rng"><span>小</span><input type="range" min="${it.kind==='object'?120:80}" max="${it.kind==='object'?760:it.kind==='color'?900:420}" step="1" value="${it.size}" data-p="size" aria-label="大小"><span>大</span></div></div></div>`;
   if(['object','zone','material','wall','floor','ceiling'].includes(it.kind))r+=`<div class="r"><div class="k">COLOUR<small>顏色</small></div><div class="v"><div class="minisw">${PALETTE.map(c=>`<button style="background:${c}" class="${it.color===c?'on':''}" data-c="${c}" aria-label="${c}"></button>`).join('')}<button data-c="" aria-label="清除" style="background:repeating-linear-gradient(45deg,#fff 0 3px,#ddd 3px 5px)"></button></div></div></div>`;
   if(['object','zone','wall','floor','ceiling'].includes(it.kind))r+=`<div class="r"><div class="k">MATERIAL<small>材質</small></div><div class="v"><div class="chips">${MATS.map(m=>`<button class="chip ${it.material===m.id?'on':''}" data-m="${m.id}">${m.name}</button>`).join('')}<button class="chip" data-m="">無</button></div></div></div>`;
   if(it.color)r+=`<div class="r"><div class="k">TONE<small>明暗／鮮豔</small></div><div class="v">
       <div class="rng"><span>暗</span><input type="range" min="0" max="1" step=".01" value="${hexToHsl(it.color)[2].toFixed(2)}" data-hsl="2" aria-label="明暗"><span>亮</span></div>
       <div class="rng"><span>灰</span><input type="range" min="0" max="1" step=".01" value="${hexToHsl(it.color)[1].toFixed(2)}" data-hsl="1" aria-label="鮮豔度"><span>艷</span></div>
       <div class="mono" style="font-size:10.5px;color:var(--mute)" id="hexout">${it.color.toUpperCase()}</div></div></div>`;
+  if(it.kind==='color')r+=`<div class="r"><div class="k">EDGE<small>邊界</small></div><div class="v"><div class="rng"><span>清楚</span><input type="range" min="0" max="1" step=".01" value="${it.blur||0}" data-p="blur" aria-label="邊界清楚或暈開"><span>暈開</span></div></div></div>`;
   if(it.kind==='zone')r+=`<div class="r"><div class="k">LABEL<small>空間名字</small></div><div class="v"><input class="line" id="f-label" value="${esc(it.label)}" data-p="label" placeholder="可不寫，例如：吃飯的地方"></div></div>`;
   r+=`<div class="r"><div class="k">MEMO<small>備忘</small></div><div class="v"><input class="line" id="f-memo" value="${esc(it.memo)}" data-p="memo" placeholder="可不寫，幾個字就好"></div></div>
       <div class="r"><div class="k">REMOVE<small>刪除</small></div><div class="v"><button class="chip" data-delit style="align-self:flex-start">刪除這個符號</button></div></div>`;
