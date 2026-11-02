@@ -555,6 +555,20 @@ body,button,input,textarea,.qa,.note,.lede,.k small,.qq,.sub p,.pill,.brand span
 .pill.pk::after{content:"";position:absolute;right:0;bottom:0;width:18px;height:18px;background:#9E0058;clip-path:polygon(0 0,100% 0,0 100%)}
 .pill.bk{left:10px;top:62px;width:auto;padding:10px 14px;font-size:13px;transform:rotate(6deg)}
 .pill.gy{left:70px;top:128px;width:150px;padding:12px 14px;font-size:12px;transform:rotate(-2.5deg)}
+
+body.touching #stage,body.touching #stage .it{cursor:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2234%22%20height%3D%2234%22%20viewBox%3D%220%200%20283.46%20283.46%22%3E%3Cg%20stroke-width%3D%2210%22%3E%3Cpath%20fill%3D%22%23fff%22%20stroke%3D%22%23211815%22%20d%3D%22M183.62%2C28.83l-10.11%2C3.62a11.44%2C11.44%2C0%2C0%2C0-6.92%2C14.62l23.9%2C66.76a2.65%2C2.65%2C0%2C0%2C1-1.6%2C3.38h0a2.65%2C2.65%2C0%2C0%2C1-3.38-1.6L154.23%2C28.23a11.43%2C11.43%2C0%2C0%2C0-14.62-6.91l-10.12%2C3.62a11.44%2C11.44%2C0%2C0%2C0-6.91%2C14.62l31.27%2C87.38a2.64%2C2.64%2C0%2C0%2C1-1.59%2C3.38h0a2.65%2C2.65%2C0%2C0%2C1-3.39-1.6L110.48%2C21.45a11.44%2C11.44%2C0%2C0%2C0-14.62-6.92L85.74%2C18.16a11.42%2C11.42%2C0%2C0%2C0-6.91%2C14.62l38.39%2C107.27a2.63%2C2.63%2C0%2C0%2C1-1.6%2C3.38h0a2.65%2C2.65%2C0%2C0%2C1-3.38-1.6L79%2C48.89A11.44%2C11.44%2C0%2C0%2C0%2C64.36%2C42L54.23%2C45.61a11.43%2C11.43%2C0%2C0%2C0-6.92%2C14.6l46.5%2C130.37a2.65%2C2.65%2C0%2C0%2C1-4.18%2C2.93L56.48%2C166a11.44%2C11.44%2C0%2C0%2C0-16.11%2C1.49l-6.86%2C8.27A11.43%2C11.43%2C0%2C0%2C0%2C35%2C191.83L100.21%2C246h0a71.14%2C71.14%2C0%2C0%2C0%2C83.92%2C28.68l21.28-7.62a71.13%2C71.13%2C0%2C0%2C0%2C43.05-90.83l-13.37-37.54L198.24%2C35.74A11.43%2C11.43%2C0%2C0%2C0%2C183.62%2C28.83Z%22/%3E%3C/g%3E%3C/svg%3E") 16 6,pointer!important}
+#stage .it.rub{transform-box:fill-box;transform-origin:50% 100%;transform:rotate(var(--rx,0deg));transition:transform .08s}
+#stage .it.rub{filter:brightness(1.04)}
+.qg{flex-wrap:wrap}.qg button+button{margin-left:auto}
+.qg #tstart.on{background:#E8D9B8;color:#2A2622;border-color:#E8D9B8}
+.qq small{color:rgba(242,240,235,.55);font-size:11px;margin-left:4px}
+.qtouch{animation:fadein .6s ease}
+
+.qcard{max-height:calc(100% - 180px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding:12px 14px 10px}
+.qcard .qa{font-size:13.5px;line-height:1.55;padding:5px 8px}
+.qcard #qa1{min-height:44px}.qcard #qa2{min-height:64px}.qcard #qa3{min-height:44px}
+.qcard .qq{margin:8px 0 4px}
+.qcard .qg{position:sticky;bottom:-10px;background:linear-gradient(rgba(40,35,30,0),rgba(40,35,30,.95) 30%);margin:8px -14px -10px;padding:12px 14px 10px}
 </style>
 
 <svg id="gdefs" aria-hidden="true"><defs id="sdefs"></defs></svg>
@@ -960,6 +974,7 @@ sv.addEventListener('pointerdown',e=>{
 sv.addEventListener('pointermove',e=>{
   if(!drag)return;
   if(drag.mode==='actor'){actorMove(e);return}
+  if(drag.mode==='touch'){const p=toWorld(e.clientX,e.clientY);drag.dist+=Math.hypot(p.x-drag.lx,p.y-drag.ly);drag.lx=p.x;drag.ly=p.y;drag.g.style.setProperty('--rx',((p.x%14)-7)/7*1.4+'deg');return}
   if(drag.mode==='pan'){const dx=e.clientX-drag.sx,dy=e.clientY-drag.sy;if(Math.abs(dx)+Math.abs(dy)>3)drag.moved=true;V.tx=drag.tx+dx;V.ty=drag.ty+dy;setWorldT();return}
   const p=toWorld(e.clientX,e.clientY);
   if(drag.mode==='rot'){let a=Math.atan2(p.y-drag.cy,p.x-drag.cx)*180/Math.PI+90;a=((a+540)%360)-180;if(Math.abs(a%45)<4||Math.abs(a%45)>41)a=Math.round(a/45)*45;drag.it.rot=Math.round(a);scheduleStage();return}
@@ -971,6 +986,8 @@ sv.addEventListener('pointermove',e=>{
 sv.addEventListener('pointerup',()=>{
   if(!drag)return;sv.classList.remove('dragging');const d=drag;drag=null;
   if(d.mode==='actor'){actorUp();return}
+  if(d.mode==='touch'){d.g.classList.remove('rub');d.g.style.removeProperty('--rx');const L=leadOf(d.it);const ms=Date.now()-d.t0;log('touch',{id:d.it.id,lead:L.id,dist:Math.round(d.dist),ms});
+    if(d.dist>60||ms>700){const first=!L.touched;L.touched=true;save();if(first){openCard(find(ui.act)||d.it,'actor');toast('摸完可以按「摸完了」，或直接寫下來')}}return}
   if(d.mode==='pan'){if(!d.keep&&!d.moved&&S.step===1&&ui.sel){ui.sel=null;renderAll()}else renderStage();return}
   if(d.mode==='move'&&d.moved)log('move',{id:d.it.id,x:Math.round(d.it.x),y:Math.round(d.it.y)});
   if(d.mode==='resize')log('resize',{id:d.it.id,w:Math.round(d.it.w),h:Math.round(d.it.h)});
@@ -1423,7 +1440,7 @@ function applyStageClasses(){
 const w2s=(x,y)=>({x:x*V.k+V.tx,y:y*V.k+V.ty});
 function placeBox(el,ax,ay,aw,ah){const C=$('center').getBoundingClientRect();const w=el.offsetWidth||320,h=el.offsetHeight||200;
   let x=ax+aw+18;if(x+w>C.width-16)x=ax-w-18;if(x<16)x=clamp(ax+aw/2-w/2,16,C.width-w-16);
-  let y=clamp(ay,70,C.height-h-90);el.style.left=x+'px';el.style.top=y+'px'}
+  let y=Math.max(70,Math.min(ay,C.height-h-100));el.style.left=x+'px';el.style.top=y+'px'}
 function positionOverlays(){
   const q=$('qcard');if(q&&!q.hidden){
     if(q.dataset.anchor==='actor'&&figDef()){const s=actorSize()*V.k,p=w2s(S.figure.x,S.figure.y);let x0=p.x-s*.3,y0=p.y-s,x1=p.x+s*.3,y1=p.y;
@@ -1450,7 +1467,7 @@ function fnav(back,next,onBack,onNext,dis){const el=ovl('fnav','fnav',`<button c
 function thud(txt){const el=ovl('thud','thud',txt);el.hidden=!txt;return el}
 
 /* ================= STEP 2 · WALK ================= */
-function answered(it){const L=leadOf(it);return !!((L.answers.memory||'').trim()||(L.answers.story||'').trim())}
+function answered(it){const L=leadOf(it);return !!((L.answers.memory||'').trim()||(L.answers.story||'').trim()||(L.answers.touch||'').trim())}
 function renderWalkUI(){
   if(!S.figure.stage||ui.pickFig){renderFigPick();return}
   const units=new Set(S.items.map(it=>leadOf(it).id));const done=[...units].filter(id=>answered(find(id))).length;
@@ -1485,7 +1502,7 @@ function activate(it){
   ui.act=it.id;ui.actT=Date.now();S.figure.face=(bbox(it)&&!isSurf(it))?((bbox(it).x+bbox(it).w/2)<S.figure.x?-1:1):S.figure.face;setActor();
   S.visits.push({id:it.id,lead:leadOf(it).id,t:new Date().toISOString(),x:Math.round(S.figure.x),y:Math.round(S.figure.y)});log('visit',{id:it.id});save();
   applyStageClasses();openCard(it,'actor');renderWalkHud()}
-function leaveCue(){if(!ui.act)return;const v=S.visits[S.visits.length-1];if(v&&v.id===ui.act&&!v.dur)v.dur=Math.round((Date.now()-ui.actT)/1000);log('leave',{id:ui.act,dur:v&&v.dur});ui.act=null;ui.grouping=false;save()}
+function leaveCue(){ui.touch=null;document.body.classList.remove('touching');if(!ui.act)return;const v=S.visits[S.visits.length-1];if(v&&v.id===ui.act&&!v.dur)v.dur=Math.round((Date.now()-ui.actT)/1000);log('leave',{id:ui.act,dur:v&&v.dur});ui.act=null;ui.grouping=false;save()}
 function renderWalkHud(){if(S.step!==2)return;const units=new Set(S.items.map(it=>leadOf(it).id));const done=[...units].filter(id=>answered(find(id))).length;const c=document.querySelector('#thud .cnt');if(c)c.textContent=`已說 ${done} / ${units.size}`}
 function closeCard(keepAct){const q=$('qcard');if(q)q.hidden=true;if(!keepAct){leaveCue();applyStageClasses();renderWalkHud()}}
 const HINTS=['那時候有誰？','是什麼時候？','有什麼聲音、氣味或溫度？','後來怎麼了？'];
@@ -1496,15 +1513,19 @@ function openCard(it,anchor,readonly){
   const head=`<div class="qh"><span class="k">${g?`一組 · ${names.length} 個線索`:`No.${nr(it)} · ${KN[it.kind]}`}</span><button class="x" aria-label="關閉">×</button></div>${near.length>1?`<div class="qnear">${near.map(n=>`<button data-sw="${n.id}" class="${mates(it.id).includes(n.id)?'on':''}" title="${esc(cueName(n))}" aria-label="${esc(cueName(n))}">${thumb(n)}</button>`).join('')}</div>`:''}
     <div class="qn">${names.map(n=>`<span class="qt">${thumb(n)}</span>`).join('')}<b>${names.map(n=>esc(cueName(n))).join('、')}</b></div>`;
   q.classList.toggle('ro',!!readonly);
-  if(readonly){const m=(L.answers.memory||'').trim(),s=(L.answers.story||'').trim();
-    q.classList.add('ro');q.innerHTML=head+(m||s?`${m?`<p class="ro">${esc(m)}</p>`:''}${s?`<p class="ro">${esc(s)}</p>`:''}`:'<p class="ro mute">（沒有留下文字）</p>');
+  if(readonly){const m=(L.answers.memory||'').trim(),s=(L.answers.story||'').trim(),tc=(L.answers.touch||'').trim();
+    q.classList.add('ro');q.innerHTML=head+(m||s||tc?`${m?`<p class="ro">${esc(m)}</p>`:''}${s?`<p class="ro">${esc(s)}</p>`:''}${tc?`<p class="ro">${esc(tc)}</p>`:''}`:'<p class="ro mute">（沒有留下文字）</p>');
   }else{
     q.innerHTML=head+`
     <label class="qq">它讓你想起什麼？</label><textarea class="qa" id="qa1" rows="2" placeholder="寫幾句就好">${esc(L.answers.memory)}</textarea>
     <label class="qq">跟它有關的事，有沒有讓你印象特別深的？</label><div class="qtip" id="qtip" hidden></div><textarea class="qa" id="qa2" rows="3" placeholder="可以慢慢說，也可以不寫">${esc(L.answers.story)}</textarea>
     <div class="qhint"><span>想不到的話：</span>${HINTS.map(h=>`<button data-h="${h}">${h}</button>`).join('')}</div>
-    <div class="qg">${ui.grouping?`<span>點其他線索，加入或移出這一組</span><button id="gdone">完成</button>`:`<button id="gstart">${g?'調整這一組':'這幾個是一起的'}</button>`}</div>`;
-    const a1=$('qa1'),a2=$('qa2');
+    ${(L.touched||(L.answers.touch||'').trim())?`<label class="qq qtouch">你通常怎麼碰它、用它？<small>（可不寫）</small></label><textarea class="qa" id="qa3" rows="2" placeholder="例如：每天回家先摸一下、要往上提才關得起來">${esc(L.answers.touch||'')}</textarea>`:''}
+    <div class="qg">${ui.grouping?`<span>點其他線索，加入或移出這一組</span><button id="gdone">完成</button>`:`<button id="gstart">${g?'調整這一組':'這幾個是一起的'}</button><button id="tstart" class="${ui.touch?'on':''}">✋ ${ui.touch?'摸完了':'摸摸看'}</button>`}</div>`;
+    const a1=$('qa1'),a2=$('qa2'),a3=$('qa3');
+    if(a3){a3.oninput=()=>{L.answers.touch=a3.value;save()};a3.onchange=()=>log('answer',{id:L.id,q:'touch',text:a3.value})}
+    const ts=$('tstart');if(ts)ts.onclick=()=>{ui.touch=ui.touch?null:it.id;document.body.classList.toggle('touching',!!ui.touch);log(ui.touch?'touch_start':'touch_end',{id:L.id});
+      if(!ui.touch&&L.touched){openCard(it,anchor);const t=$('qa3');if(t)t.focus()}else openCard(it,anchor)};
     a1.oninput=()=>{L.answers.memory=a1.value;save();renderWalkHud()};a1.onchange=()=>log('answer',{id:L.id,q:'memory',text:a1.value});
     a2.oninput=()=>{L.answers.story=a2.value;save();renderWalkHud()};a2.onchange=()=>log('answer',{id:L.id,q:'story',text:a2.value});
     q.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{const h=b.dataset.h;const tp=$('qtip');tp.textContent='想想看：'+h;tp.hidden=false;q.querySelectorAll('[data-h]').forEach(x=>x.classList.toggle('on',x===b));a2.focus();
@@ -1528,6 +1549,8 @@ function toggleGroupMember(id){
 function cueDist(it){const f=S.figure;const p=standPoint(it);const b=bbox(it);if(!b||isSurf(it))return 1e9;const cx=b.x+b.w/2;
   return Math.min(Math.hypot(p.x-f.x,(p.y-f.y)*1.4),Math.abs(cx-f.x)+(it.kind==='object'&&it.y>0?Math.abs(it.y-f.y)*1.2:Math.max(0,f.y-120)))}
 function nearbyCues(){const act=ui.act?mates(ui.act):[];const seen=new Set();return S.items.map(it=>({it,d:act.includes(it.id)?-1:cueDist(it)})).filter(o=>o.d<260).sort((a,b)=>a.d-b.d).map(o=>o.it).filter(it=>{const L=leadOf(it).id;if(seen.has(L))return false;seen.add(L);return true}).slice(0,6)}
+function pickCueAt(p,ok){let best=null,bd=1e9;S.items.forEach(it=>{if(isSurf(it)||!ok(it))return;const b=bbox(it);if(!b)return;const pad=24;
+  if(p.x<b.x-pad||p.x>b.x+b.w+pad||p.y<b.y-pad||p.y>b.y+b.h+pad)return;const d=Math.hypot(p.x-(b.x+b.w/2),p.y-(b.y+b.h/2))/Math.max(40,Math.min(b.w,b.h));if(d<bd){bd=d;best=it}});return best}
 function nearestCue(){const f=S.figure;let best=null,bd=1e9;
   S.items.forEach(it=>{if(isSurf(it))return;const p=standPoint(it);const b=bbox(it);if(!b)return;const cx=b.x+b.w/2;
     const d=Math.min(Math.hypot(p.x-f.x,(p.y-f.y)*1.4),Math.abs(cx-f.x)+(it.kind==='object'&&it.y>0?Math.abs(it.y-f.y)*1.2:Math.max(0,f.y-120)));
@@ -1554,7 +1577,7 @@ async function startReplay(){
     await walkAnim(st.x,st.y,tok,true);if(tok!==RP.tok)return;
     const it=find(st.id),L=find(st.lead)||it;ui.act=st.id;const b=bbox(it);if(b&&!isSurf(it))S.figure.face=(b.x+b.w/2)<S.figure.x?-1:1;setActor();applyStageClasses();
     const m=(L.answers.memory||'').trim(),s=(L.answers.story||'').trim();const g=groupOf(it.id);
-    const sn=x=>x.kind==='sense'?cueName(x):shortName(x);const nm=g?g.members.map(id=>sn(find(id))).join('、'):sn(it);const lines=[m,...s.split(/\n+/)].map(x=>x.trim()).filter(Boolean);
+    const sn=x=>x.kind==='sense'?cueName(x):shortName(x);const nm=g?g.members.map(id=>sn(find(id))).join('、'):sn(it);const lines=[m,...s.split(/\n+/),L.answers.touch||''].map(x=>x.trim()).filter(Boolean);
     const lb=$('lbT');if(lb)lb.innerHTML=`<span>${String(stops.indexOf(st)+1).padStart(2,'0')} / ${String(stops.length).padStart(2,'0')}</span>`;
     for(let i=0;i<lines.length;i++){if(tok!==RP.tok)return;const sub=ovl('sub','sub',`<p><span>${i===0?`<em>— [${esc(nm)}]</em> `:''}${esc(lines[i])}</span></p>`);sub.hidden=false;
       await sleep(clamp(1900+lines[i].length*120,2600,8500))}
@@ -1652,7 +1675,7 @@ function downloadPNG(){const {W,H}=stageSize();const img=new Image();const k=2;
     try{dl(fileBase()+'.png',c.toDataURL('image/png'));log('download',{type:'png'})}catch(e){toast('這個環境無法下載圖片')}};
   img.onerror=()=>toast('圖片產生失敗');img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(sceneSVG(false))}
 function downloadHTML(){
-  const D={};S.items.forEach(it=>{const L=leadOf(it);D[it.id]={n:cueName(it),m:L.answers.memory||'',s:L.answers.story||''}});
+  const D={};S.items.forEach(it=>{const L=leadOf(it);D[it.id]={n:cueName(it),m:L.answers.memory||'',s:[L.answers.story||'',L.answers.touch||''].filter(Boolean).join('\n')}});
   const t=S.title||S.home.name||'';
   const html=`<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(t)}</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400&family=IBM+Plex+Mono&family=Noto+Sans+TC:wght@400&display=swap" rel="stylesheet">
@@ -1670,6 +1693,13 @@ document.body.addEventListener('click',()=>c.style.display='none');<\/script></b
   dl(fileBase()+'.html',URL.createObjectURL(new Blob([html],{type:'text/html'})));log('download',{type:'html'})}
 /* ================= stage pointer hooks ================= */
 function theatreDown(e){
+  if(S.step===2&&ui.touch){const p=toWorld(e.clientX,e.clientY);const ms=mates(ui.touch);let g=e.target.closest('.it');let it=g&&find(g.dataset.id);
+    if(!(it&&ms.includes(it.id))){it=pickCueAt(p,x=>ms.includes(x.id));g=it&&document.querySelector(`#stage .it[data-id="${it.id}"]`)}
+    if(it&&g){drag={mode:'touch',it,g,lx:p.x,ly:p.y,dist:0,t0:Date.now()};sv.setPointerCapture(e.pointerId);g.classList.add('rub');return true}
+    toast('在線索上按住滑鼠，來回摸摸看');return true}
+  if(S.step===2&&ui.grouping&&ui.act){const p=toWorld(e.clientX,e.clientY);let g=e.target.closest('.it');let it=g&&find(g.dataset.id);
+    if(!it||isSurf(it))it=pickCueAt(p,x=>true);
+    if(it){toggleGroupMember(it.id);return true}}
   if(S.step<2)return false;
   if(S.step===5)return true;
   const a=e.target.closest('#actor');
